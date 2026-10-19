@@ -3,15 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eksplorasi Persamaan Kuadratik</title>
+  <title>QuadraticPlayGround - Eksplorasi Interaktif</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --primary: #2563eb;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #1e293b;
-      --border: #e2e8f0;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --accent: #38bdf8;
+      --danger: #f87171;
+      --success: #4ade80;
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
@@ -25,14 +33,14 @@
     }
 
     .container {
-      max-width: 960px;
+      max-width: 1100px;
       width: 100%;
       display: grid;
-      grid-template-columns: 1fr 1.3fr;
+      grid-template-columns: 1.1fr 1.3fr;
       gap: 24px;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 860px) {
       .container {
         grid-template-columns: 1fr;
       }
@@ -41,143 +49,211 @@
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
     }
 
-    h2 {
+    h1, h2 {
       margin-top: 0;
-      font-size: 1.25rem;
-      color: #0f172a;
+      color: #ffffff;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
     }
 
     .equation-display {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: 700;
       text-align: center;
       padding: 14px;
-      background: #eff6ff;
-      border-radius: 8px;
-      color: var(--primary);
-      margin-bottom: 20px;
+      background: #090d16;
+      border: 1px solid var(--primary);
+      border-radius: 10px;
+      color: var(--accent);
+      margin-bottom: 22px;
       letter-spacing: 0.5px;
     }
 
-    .slider-group {
-      margin-bottom: 16px;
+    .control-row {
+      margin-bottom: 18px;
+      background: #172033;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
     }
 
-    .slider-header {
+    .control-header {
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .control-header label {
       font-weight: 600;
-      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .input-num {
+      width: 75px;
+      padding: 5px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    .input-num:focus {
+      outline: 2px solid var(--primary);
     }
 
     input[type="range"] {
       width: 100%;
       accent-color: var(--primary);
+      cursor: pointer;
     }
 
-    .info-box {
-      margin-top: 18px;
-      padding: 12px;
+    .result-section {
+      margin-top: 20px;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .stat-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .badge-two { background: rgba(74, 222, 128, 0.2); color: var(--success); border: 1px solid var(--success); }
+    .badge-one { background: rgba(56, 189, 248, 0.2); color: var(--accent); border: 1px solid var(--accent); }
+    .badge-none { background: rgba(248, 113, 113, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+
+    .formula-box {
+      background: #090d16;
       border-radius: 8px;
-      background: #f1f5f9;
+      padding: 12px;
+      font-family: 'Courier New', Courier, monospace;
       font-size: 0.95rem;
-      line-height: 1.6;
+      line-height: 1.5;
+      margin-top: 10px;
+      color: #e2e8f0;
     }
 
-    .roots-highlight {
-      font-weight: 700;
-      color: #059669;
+    .roots-value {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: #ffffff;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Bahagian Kawalan & Teori -->
+  <!-- Kolum Kiri: Kawalan Input & Analisis Punca -->
   <div class="card">
-    <h2>Persamaan Kuadratik</h2>
+    <h1>QuadraticPlayGround</h1>
+    
     <div class="equation-display" id="equationText">
       f(x) = 1x² + 0x + 0
     </div>
 
-    <!-- Slider Nilai a -->
-    <div class="slider-group">
-      <div class="slider-header">
-        <label for="valA">Pekali a (Bentuk & Kelebaran):</label>
-        <span id="labelA">1</span>
+    <!-- Pekali a -->
+    <div class="control-row">
+      <div class="control-header">
+        <label for="numA">Pekali a (a ≠ 0):</label>
+        <input type="number" id="numA" class="input-num" value="1" step="0.5">
       </div>
-      <input type="range" id="valA" min="-5" max="5" step="0.5" value="1">
+      <input type="range" id="rangeA" min="-10" max="10" step="0.5" value="1">
     </div>
 
-    <!-- Slider Nilai b -->
-    <div class="slider-group">
-      <div class="slider-header">
-        <label for="valB">Pekali b (Kedudukan Paksi Simetri):</label>
-        <span id="labelB">0</span>
+    <!-- Pekali b -->
+    <div class="control-row">
+      <div class="control-header">
+        <label for="numB">Pekali b:</label>
+        <input type="number" id="numB" class="input-num" value="0" step="0.5">
       </div>
-      <input type="range" id="valB" min="-10" max="10" step="0.5" value="0">
+      <input type="range" id="rangeB" min="-20" max="20" step="0.5" value="0">
     </div>
 
-    <!-- Slider Nilai c -->
-    <div class="slider-group">
-      <div class="slider-header">
-        <label for="valC">Pemalar c (Pintasan-y):</label>
-        <span id="labelC">0</span>
+    <!-- Pemalar c -->
+    <div class="control-row">
+      <div class="control-header">
+        <label for="numC">Pemalar c (Pintasan-y):</label>
+        <input type="number" id="numC" class="input-num" value="0" step="1">
       </div>
-      <input type="range" id="valC" min="-10" max="10" step="1" value="0">
+      <input type="range" id="rangeC" min="-20" max="20" step="1" value="0">
     </div>
 
-    <!-- Analisis Diskriminan & Punca -->
-    <div class="info-box">
-      <strong>Analisis Nilai b² - 4ac:</strong>
-      <div id="discrimText">Δ = 0</div>
-      <div id="rootsText" class="roots-highlight">Dua punca nyata yang sama: x = 0</div>
+    <!-- Hasil Analisis Punca & Diskriminan -->
+    <div class="result-section">
+      <div id="badgeStatus" class="stat-badge badge-two">Analisis Punca</div>
+      
+      <div class="formula-box">
+        <div id="discrimFormula">Δ = b² - 4ac = ...</div>
+        <div id="rootFormulaText">x = (-b ± √Δ) / 2a</div>
+      </div>
+
+      <div class="roots-value" id="rootsResult">
+        x₁ = 0.00, x₂ = 0.00
+      </div>
     </div>
   </div>
 
-  <!-- Bahagian Graf -->
+  <!-- Kolum Kanan: Paparan Graf Realtime -->
   <div class="card">
-    <h2>Graf Kuadratik f(x)</h2>
+    <h2>Lengkung Graf Kuadratik</h2>
     <canvas id="quadChart"></canvas>
   </div>
 </div>
 
 <script>
-  const sliderA = document.getElementById('valA');
-  const sliderB = document.getElementById('valB');
-  const sliderC = document.getElementById('valC');
+  // Elemen input nombor & range slider
+  const numA = document.getElementById('numA');
+  const rangeA = document.getElementById('rangeA');
+  const numB = document.getElementById('numB');
+  const rangeB = document.getElementById('rangeB');
+  const numC = document.getElementById('numC');
+  const rangeC = document.getElementById('rangeC');
 
-  const labelA = document.getElementById('labelA');
-  const labelB = document.getElementById('labelB');
-  const labelC = document.getElementById('labelC');
+  // Elemen teks
   const equationText = document.getElementById('equationText');
-  const discrimText = document.getElementById('discrimText');
-  const rootsText = document.getElementById('rootsText');
+  const discrimFormula = document.getElementById('discrimFormula');
+  const rootsResult = document.getElementById('rootsResult');
+  const badgeStatus = document.getElementById('badgeStatus');
 
-  // Konfigurasi Asas Chart.js
+  // Konfigurasi Chart.js
   const ctx = document.getElementById('quadChart').getContext('2d');
   const quadChart = new Chart(ctx, {
     type: 'line',
     data: {
       datasets: [
         {
-          label: 'f(x)',
-          borderColor: '#2563eb',
+          label: 'Lengkung f(x)',
+          borderColor: '#38bdf8',
           borderWidth: 2.5,
           fill: false,
           pointRadius: 0,
           data: []
         },
         {
-          label: 'Punca (Roots)',
-          backgroundColor: '#ef4444',
-          borderColor: '#ef4444',
-          pointRadius: 6,
+          label: 'Punca Nyata (Roots)',
+          backgroundColor: '#f87171',
+          borderColor: '#ffffff',
+          borderWidth: 2,
+          pointRadius: 7,
+          pointHoverRadius: 9,
           showLine: false,
           data: []
         }
@@ -191,85 +267,106 @@
           position: 'center',
           min: -10,
           max: 10,
-          grid: { color: '#cbd5e1' }
+          grid: { color: '#334155' },
+          ticks: { color: '#94a3b8' }
         },
         y: {
           type: 'linear',
           position: 'center',
           min: -15,
           max: 15,
-          grid: { color: '#cbd5e1' }
+          grid: { color: '#334155' },
+          ticks: { color: '#94a3b8' }
         }
       },
       plugins: {
-        legend: { display: false }
+        legend: {
+          labels: { color: '#f8fafc' }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return ` (${context.parsed.x.toFixed(2)}, ${context.parsed.y.toFixed(2)})`;
+            }
+          }
+        }
       }
     }
   });
 
-  function updateMath() {
-    let a = parseFloat(sliderA.value);
-    const b = parseFloat(sliderB.value);
-    const c = parseFloat(sliderC.value);
+  // Fungsi mengemaskini matematik dan graf
+  function updateState(source) {
+    let a = parseFloat(numA.value) || 0;
+    let b = parseFloat(numB.value) || 0;
+    let c = parseFloat(numC.value) || 0;
 
-    // Elakkan a = 0 kerana graf bukan lagi parabola kuadratik
+    // a tidak boleh sifar dalam persamaan kuadratik
     if (a === 0) {
-      a = 0.1;
-      sliderA.value = 0.1;
+      a = 0.5;
+      numA.value = 0.5;
+      rangeA.value = 0.5;
     }
 
-    // Kemas kini label antaramuka
-    labelA.textContent = a;
-    labelB.textContent = b;
-    labelC.textContent = c;
+    // Selaraskan nilai input teks vs slider
+    if (source === 'range') {
+      numA.value = rangeA.value;
+      numB.value = rangeB.value;
+      numC.value = rangeC.value;
+      a = parseFloat(numA.value);
+      b = parseFloat(numB.value);
+      c = parseFloat(numC.value);
+    } else {
+      rangeA.value = a;
+      rangeB.value = b;
+      rangeC.value = c;
+    }
 
-    const bSign = b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`;
-    const cSign = c >= 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
-    equationText.textContent = `f(x) = ${a}x² ${bSign}x ${cSign}`;
+    // Paparan teks persamaan
+    const signB = b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`;
+    const signC = c >= 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+    equationText.textContent = `f(x) = ${a}x² ${signB}x ${signC}`;
 
-    // Pengiraan Diskriminan: b² - 4ac
-    const discriminant = (b * b) - (4 * a * c);
-    discrimText.textContent = `b² - 4ac = (${b})² - 4(${a})(${c}) = ${discriminant.toFixed(2)}`;
+    // Pengiraan Diskriminan: Δ = b² - 4ac
+    const delta = (b * b) - (4 * a * c);
+    discrimFormula.innerHTML = `Δ = (${b})² - 4(${a})(${c}) = <strong>${delta.toFixed(2)}</strong>`;
 
-    // Analisis Punca dan Titik Persilangan Paksi-x
     let rootPoints = [];
-    if (discriminant > 0) {
-      const r1 = (-b + Math.sqrt(discriminant)) / (2 * a);
-      const r2 = (-b - Math.sqrt(discriminant)) / (2 * a);
-      rootsText.textContent = `2 Punca Nyata Berbeza: x₁ = ${r1.toFixed(2)}, x₂ = ${r2.toFixed(2)}`;
+
+    if (delta > 0) {
+      const r1 = (-b + Math.sqrt(delta)) / (2 * a);
+      const r2 = (-b - Math.sqrt(delta)) / (2 * a);
+      
+      badgeStatus.className = 'stat-badge badge-two';
+      badgeStatus.textContent = '2 Punca Nyata Berbeza (Δ > 0)';
+      rootsResult.innerHTML = `x₁ = <span style="color:#4ade80">${r1.toFixed(3)}</span>, &nbsp; x₂ = <span style="color:#4ade80">${r2.toFixed(3)}</span>`;
       rootPoints = [{ x: r1, y: 0 }, { x: r2, y: 0 }];
-    } else if (discriminant === 0) {
+    } else if (Math.abs(delta) < 0.0001) {
       const r = -b / (2 * a);
-      rootsText.textContent = `2 Punca Nyata Sama: x = ${r.toFixed(2)}`;
+      
+      badgeStatus.className = 'stat-badge badge-one';
+      badgeStatus.textContent = '2 Punca Nyata Sama / 1 Titik Sentuh (Δ = 0)';
+      rootsResult.innerHTML = `x = <span style="color:#38bdf8">${r.toFixed(3)}</span>`;
       rootPoints = [{ x: r, y: 0 }];
     } else {
-      rootsText.textContent = `Tiada Punca Nyata (Graf tidak menyentuh paksi-x)`;
+      const realPart = (-b / (2 * a)).toFixed(2);
+      const imagPart = (Math.sqrt(Math.abs(delta)) / (2 * a)).toFixed(2);
+
+      badgeStatus.className = 'stat-badge badge-none';
+      badgeStatus.textContent = 'Tiada Punca Nyata (Punca Kompleks, Δ < 0)';
+      rootsResult.innerHTML = `x = ${realPart} ± ${Math.abs(imagPart)}i <br><small style="color:#94a3b8">(Graf tidak bersilang pada paksi-x)</small>`;
       rootPoints = [];
     }
 
-    // Jana koordinat untuk lengkung parabola
+    // Kira titik-titik untuk keluk parabola
     const curvePoints = [];
-    for (let x = -10; x <= 10; x += 0.25) {
+    const minX = Math.min(-10, ...rootPoints.map(p => p.x - 2));
+    const maxX = Math.max(10, ...rootPoints.map(p => p.x + 2));
+
+    for (let x = minX; x <= maxX; x += 0.2) {
       const y = (a * x * x) + (b * x) + c;
-      if (y >= -20 && y <= 20) {
+      if (y >= -50 && y <= 50) {
         curvePoints.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(y.toFixed(2)) });
       }
     }
 
-    // Kemas kini dataset dalam graf
-    quadChart.data.datasets[0].data = curvePoints;
-    quadChart.data.datasets[1].data = rootPoints;
-    quadChart.update('none'); // Render laju tanpa animasi berat
-  }
-
-  // Sambungkan pendengar peristiwa (event listener)
-  sliderA.addEventListener('input', updateMath);
-  sliderB.addEventListener('input', updateMath);
-  sliderC.addEventListener('input', updateMath);
-
-  // Inisialisasi awal
-  updateMath();
-</script>
-
-</body>
-</html>
+    // Kemas kini skala graf mengikut titik pun
