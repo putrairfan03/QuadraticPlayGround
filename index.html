@@ -331,14 +331,15 @@
       type: 'line',
       data: {
         datasets: [
-          {
-            label: 'Lengkung Parabola f(x)',
-            borderColor: '#f97316',
-            borderWidth: 3,
-            fill: false,
-            pointRadius: 0,
-            data: []
-          },
+        {
+          label: 'Lengkung Parabola f(x)',
+          borderColor: '#f97316',
+          borderWidth: 3,
+          fill: false,
+          tension: 0.1,      // <-- TAMBAH BARIS INI supaya lengkung sentiasa 'smooth'
+          pointRadius: 0,
+          data: []
+        },
           {
             label: 'Titik Bola Naga (Punca / Roots)',
             backgroundColor: '#facc15',
