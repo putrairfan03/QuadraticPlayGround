@@ -7,7 +7,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --primary: #2563eb;
+      --primary: #3b82f6;
       --bg: #0f172a;
       --card-bg: #1e293b;
       --text: #f8fafc;
@@ -18,9 +18,7 @@
       --success: #4ade80;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -36,14 +34,12 @@
       max-width: 1100px;
       width: 100%;
       display: grid;
-      grid-template-columns: 1.1fr 1.3fr;
+      grid-template-columns: 1fr 1.2fr;
       gap: 24px;
     }
 
     @media (max-width: 860px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
+      .container { grid-template-columns: 1fr; }
     }
 
     .card {
@@ -75,7 +71,6 @@
       border-radius: 10px;
       color: var(--accent);
       margin-bottom: 22px;
-      letter-spacing: 0.5px;
     }
 
     .control-row {
@@ -99,8 +94,8 @@
     }
 
     .input-num {
-      width: 75px;
-      padding: 5px 8px;
+      width: 80px;
+      padding: 6px 8px;
       border-radius: 6px;
       border: 1px solid var(--border);
       background: #0f172a;
@@ -145,7 +140,7 @@
       padding: 12px;
       font-family: 'Courier New', Courier, monospace;
       font-size: 0.95rem;
-      line-height: 1.5;
+      line-height: 1.6;
       margin-top: 10px;
       color: #e2e8f0;
     }
@@ -154,14 +149,20 @@
       font-size: 1.05rem;
       font-weight: bold;
       color: #ffffff;
-      margin-top: 8px;
+      margin-top: 10px;
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 380px;
+      width: 100%;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Kolum Kiri: Kawalan Input & Analisis Punca -->
+  <!-- Kolum Kiri -->
   <div class="card">
     <h1>QuadraticPlayGround</h1>
     
@@ -196,13 +197,13 @@
       <input type="range" id="rangeC" min="-20" max="20" step="1" value="0">
     </div>
 
-    <!-- Hasil Analisis Punca & Diskriminan -->
+    <!-- Hasil Analisis -->
     <div class="result-section">
       <div id="badgeStatus" class="stat-badge badge-two">Analisis Punca</div>
       
       <div class="formula-box">
         <div id="discrimFormula">Δ = b² - 4ac = ...</div>
-        <div id="rootFormulaText">x = (-b ± √Δ) / 2a</div>
+        <div>Formula: x = (-b ± √Δ) / 2a</div>
       </div>
 
       <div class="roots-value" id="rootsResult">
@@ -211,162 +212,164 @@
     </div>
   </div>
 
-  <!-- Kolum Kanan: Paparan Graf Realtime -->
+  <!-- Kolum Kanan -->
   <div class="card">
     <h2>Lengkung Graf Kuadratik</h2>
-    <canvas id="quadChart"></canvas>
+    <div class="chart-wrapper">
+      <canvas id="quadChart"></canvas>
+    </div>
   </div>
 </div>
 
 <script>
-  // Elemen input nombor & range slider
-  const numA = document.getElementById('numA');
-  const rangeA = document.getElementById('rangeA');
-  const numB = document.getElementById('numB');
-  const rangeB = document.getElementById('rangeB');
-  const numC = document.getElementById('numC');
-  const rangeC = document.getElementById('rangeC');
+  window.addEventListener('DOMContentLoaded', () => {
+    const numA = document.getElementById('numA');
+    const rangeA = document.getElementById('rangeA');
+    const numB = document.getElementById('numB');
+    const rangeB = document.getElementById('rangeB');
+    const numC = document.getElementById('numC');
+    const rangeC = document.getElementById('rangeC');
 
-  // Elemen teks
-  const equationText = document.getElementById('equationText');
-  const discrimFormula = document.getElementById('discrimFormula');
-  const rootsResult = document.getElementById('rootsResult');
-  const badgeStatus = document.getElementById('badgeStatus');
+    const equationText = document.getElementById('equationText');
+    const discrimFormula = document.getElementById('discrimFormula');
+    const rootsResult = document.getElementById('rootsResult');
+    const badgeStatus = document.getElementById('badgeStatus');
 
-  // Konfigurasi Chart.js
-  const ctx = document.getElementById('quadChart').getContext('2d');
-  const quadChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      datasets: [
-        {
-          label: 'Lengkung f(x)',
-          borderColor: '#38bdf8',
-          borderWidth: 2.5,
-          fill: false,
-          pointRadius: 0,
-          data: []
-        },
-        {
-          label: 'Punca Nyata (Roots)',
-          backgroundColor: '#f87171',
-          borderColor: '#ffffff',
-          borderWidth: 2,
-          pointRadius: 7,
-          pointHoverRadius: 9,
-          showLine: false,
-          data: []
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        x: {
-          type: 'linear',
-          position: 'center',
-          min: -10,
-          max: 10,
-          grid: { color: '#334155' },
-          ticks: { color: '#94a3b8' }
-        },
-        y: {
-          type: 'linear',
-          position: 'center',
-          min: -15,
-          max: 15,
-          grid: { color: '#334155' },
-          ticks: { color: '#94a3b8' }
-        }
+    const ctx = document.getElementById('quadChart').getContext('2d');
+    
+    // Inisialisasi graf
+    const quadChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        datasets: [
+          {
+            label: 'Lengkung f(x)',
+            borderColor: '#38bdf8',
+            borderWidth: 2.5,
+            fill: false,
+            pointRadius: 0,
+            data: []
+          },
+          {
+            label: 'Punca Nyata (Roots)',
+            backgroundColor: '#f87171',
+            borderColor: '#ffffff',
+            borderWidth: 2,
+            pointRadius: 7,
+            pointHoverRadius: 9,
+            showLine: false,
+            data: []
+          }
+        ]
       },
-      plugins: {
-        legend: {
-          labels: { color: '#f8fafc' }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            type: 'linear',
+            position: 'center',
+            min: -10,
+            max: 10,
+            grid: { color: '#334155' },
+            ticks: { color: '#94a3b8' }
+          },
+          y: {
+            type: 'linear',
+            position: 'center',
+            min: -15,
+            max: 15,
+            grid: { color: '#334155' },
+            ticks: { color: '#94a3b8' }
+          }
         },
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              return ` (${context.parsed.x.toFixed(2)}, ${context.parsed.y.toFixed(2)})`;
-            }
+        plugins: {
+          legend: {
+            labels: { color: '#f8fafc' }
           }
         }
       }
-    }
-  });
+    });
 
-  // Fungsi mengemaskini matematik dan graf
-  function updateState(source) {
-    let a = parseFloat(numA.value) || 0;
-    let b = parseFloat(numB.value) || 0;
-    let c = parseFloat(numC.value) || 0;
-
-    // a tidak boleh sifar dalam persamaan kuadratik
-    if (a === 0) {
-      a = 0.5;
-      numA.value = 0.5;
-      rangeA.value = 0.5;
-    }
-
-    // Selaraskan nilai input teks vs slider
-    if (source === 'range') {
-      numA.value = rangeA.value;
-      numB.value = rangeB.value;
-      numC.value = rangeC.value;
-      a = parseFloat(numA.value);
-      b = parseFloat(numB.value);
-      c = parseFloat(numC.value);
-    } else {
-      rangeA.value = a;
-      rangeB.value = b;
-      rangeC.value = c;
-    }
-
-    // Paparan teks persamaan
-    const signB = b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`;
-    const signC = c >= 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
-    equationText.textContent = `f(x) = ${a}x² ${signB}x ${signC}`;
-
-    // Pengiraan Diskriminan: Δ = b² - 4ac
-    const delta = (b * b) - (4 * a * c);
-    discrimFormula.innerHTML = `Δ = (${b})² - 4(${a})(${c}) = <strong>${delta.toFixed(2)}</strong>`;
-
-    let rootPoints = [];
-
-    if (delta > 0) {
-      const r1 = (-b + Math.sqrt(delta)) / (2 * a);
-      const r2 = (-b - Math.sqrt(delta)) / (2 * a);
-      
-      badgeStatus.className = 'stat-badge badge-two';
-      badgeStatus.textContent = '2 Punca Nyata Berbeza (Δ > 0)';
-      rootsResult.innerHTML = `x₁ = <span style="color:#4ade80">${r1.toFixed(3)}</span>, &nbsp; x₂ = <span style="color:#4ade80">${r2.toFixed(3)}</span>`;
-      rootPoints = [{ x: r1, y: 0 }, { x: r2, y: 0 }];
-    } else if (Math.abs(delta) < 0.0001) {
-      const r = -b / (2 * a);
-      
-      badgeStatus.className = 'stat-badge badge-one';
-      badgeStatus.textContent = '2 Punca Nyata Sama / 1 Titik Sentuh (Δ = 0)';
-      rootsResult.innerHTML = `x = <span style="color:#38bdf8">${r.toFixed(3)}</span>`;
-      rootPoints = [{ x: r, y: 0 }];
-    } else {
-      const realPart = (-b / (2 * a)).toFixed(2);
-      const imagPart = (Math.sqrt(Math.abs(delta)) / (2 * a)).toFixed(2);
-
-      badgeStatus.className = 'stat-badge badge-none';
-      badgeStatus.textContent = 'Tiada Punca Nyata (Punca Kompleks, Δ < 0)';
-      rootsResult.innerHTML = `x = ${realPart} ± ${Math.abs(imagPart)}i <br><small style="color:#94a3b8">(Graf tidak bersilang pada paksi-x)</small>`;
-      rootPoints = [];
-    }
-
-    // Kira titik-titik untuk keluk parabola
-    const curvePoints = [];
-    const minX = Math.min(-10, ...rootPoints.map(p => p.x - 2));
-    const maxX = Math.max(10, ...rootPoints.map(p => p.x + 2));
-
-    for (let x = minX; x <= maxX; x += 0.2) {
-      const y = (a * x * x) + (b * x) + c;
-      if (y >= -50 && y <= 50) {
-        curvePoints.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(y.toFixed(2)) });
+    function updateState(source) {
+      if (source === 'range') {
+        numA.value = rangeA.value;
+        numB.value = rangeB.value;
+        numC.value = rangeC.value;
+      } else {
+        rangeA.value = numA.value;
+        rangeB.value = numB.value;
+        rangeC.value = numC.value;
       }
+
+      let a = parseFloat(numA.value);
+      let b = parseFloat(numB.value);
+      let c = parseFloat(numC.value);
+
+      if (isNaN(a) || a === 0) a = 0.1;
+      if (isNaN(b)) b = 0;
+      if (isNaN(c)) c = 0;
+
+      // Paparan formula
+      const signB = b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`;
+      const signC = c >= 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+      equationText.textContent = `f(x) = ${a}x² ${signB}x ${signC}`;
+
+      // Diskriminan: b² - 4ac
+      const delta = (b * b) - (4 * a * c);
+      discrimFormula.innerHTML = `Δ = (${b})² - 4(${a})(${c}) = <strong>${delta.toFixed(2)}</strong>`;
+
+      let rootPoints = [];
+
+      if (delta > 0.0001) {
+        const r1 = (-b + Math.sqrt(delta)) / (2 * a);
+        const r2 = (-b - Math.sqrt(delta)) / (2 * a);
+        badgeStatus.className = 'stat-badge badge-two';
+        badgeStatus.textContent = '2 Punca Nyata Berbeza (Δ > 0)';
+        rootsResult.innerHTML = `x₁ = <span style="color:#4ade80">${r1.toFixed(2)}</span>, &nbsp; x₂ = <span style="color:#4ade80">${r2.toFixed(2)}</span>`;
+        rootPoints = [{ x: r1, y: 0 }, { x: r2, y: 0 }];
+      } else if (Math.abs(delta) <= 0.0001) {
+        const r = -b / (2 * a);
+        badgeStatus.className = 'stat-badge badge-one';
+        badgeStatus.textContent = '2 Punca Nyata Sama (Δ = 0)';
+        rootsResult.innerHTML = `x = <span style="color:#38bdf8">${r.toFixed(2)}</span>`;
+        rootPoints = [{ x: r, y: 0 }];
+      } else {
+        const realPart = (-b / (2 * a)).toFixed(2);
+        const imagPart = (Math.sqrt(Math.abs(delta)) / (2 * a)).toFixed(2);
+        badgeStatus.className = 'stat-badge badge-none';
+        badgeStatus.textContent = 'Tiada Punca Nyata (Punca Khayalan, Δ < 0)';
+        rootsResult.innerHTML = `x = ${realPart} ± ${Math.abs(imagPart)}i <br><small style="color:#94a3b8">(Graf tidak menyentuh paksi-x)</small>`;
+        rootPoints = [];
+      }
+
+      // Titik lengkung
+      const curvePoints = [];
+      for (let x = -10; x <= 10; x += 0.25) {
+        const y = (a * x * x) + (b * x) + c;
+        if (y >= -30 && y <= 30) {
+          curvePoints.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(y.toFixed(2)) });
+        }
+      }
+
+      quadChart.data.datasets[0].data = curvePoints;
+      quadChart.data.datasets[1].data = rootPoints;
+      quadChart.update('none');
     }
 
-    // Kemas kini skala graf mengikut titik pun
+    // Pasang event listener
+    [numA, numB, numC].forEach(input => {
+      input.addEventListener('input', () => updateState('num'));
+    });
+
+    [rangeA, rangeB, rangeC].forEach(slider => {
+      slider.addEventListener('input', () => updateState('range'));
+    });
+
+    // Jalankan sekali pada permulaan
+    updateState('num');
+  });
+</script>
+
+</body>
+</html>
