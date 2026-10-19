@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quadratic Play Ground - Dragon Ball Edition</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
   <style>
     :root {
       --primary: #f97316;       /* Oren Dragon Ball */
@@ -355,30 +357,72 @@
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        scales: {
+        plugins: {
+          legend: {
+            labels: { color: '#ffffff', font: { weight: 'bold' } }
+          },
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: 'xy',
+              modifierKey: null
+            },
+            zoom: {
+              wheel: {
+                enabled: true,
+                speed: 0.1
+              },
+              pinch: {
+                enabled: true
+              },
+              mode: 'xy'
+            }
+          }
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+scales: {
           x: {
             type: 'linear',
             position: 'center',
             min: -100,
             max: 100,
-            grid: { color: 'rgba(234, 88, 12, 0.25)' },
-            ticks: { color: '#facc15', font: { weight: 'bold' } }
+            border: {
+              display: true,
+              color: '#ffffff', // Garisan paksi tengah putih terang
+              width: 3
+            },
+            grid: {
+              // Garis tepat pada x=0 jadi putih tebal, garisan lain jingga malap
+              color: (context) => (context.tick && context.tick.value === 0 ? '#ffffff' : 'rgba(234, 88, 12, 0.2)'),
+              lineWidth: (context) => (context.tick && context.tick.value === 0 ? 3 : 1)
+            },
+            ticks: {
+              color: '#facc15',
+              font: { weight: 'bold', size: 11 }
+            }
           },
           y: {
             type: 'linear',
             position: 'center',
             min: -100,
             max: 100,
-            grid: { color: 'rgba(234, 88, 12, 0.25)' },
-            ticks: { color: '#facc15', font: { weight: 'bold' } }
+            border: {
+              display: true,
+              color: '#ffffff', // Garisan paksi tengah putih terang
+              width: 3
+            },
+            grid: {
+              // Garis tepat pada y=0 jadi putih tebal, garisan lain jingga malap
+              color: (context) => (context.tick && context.tick.value === 0 ? '#ffffff' : 'rgba(234, 88, 12, 0.2)'),
+              lineWidth: (context) => (context.tick && context.tick.value === 0 ? 3 : 1)
+            },
+            ticks: {
+              color: '#facc15',
+              font: { weight: 'bold', size: 11 }
+            }
           }
         },
-        plugins: {
-          legend: {
-            labels: { color: '#ffffff', font: { weight: 'bold' } }
-          }
-        }
-      }
     });
 
     function updateState(source) {
