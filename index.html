@@ -430,10 +430,11 @@
         rootPoints = [];
       }
 
-      const curvePoints = [];
-      for (let x = -10; x <= 10; x += 0.25) {
+     const curvePoints = [];
+      for (let x = -100; x <= 100; x += 0.5) {
         const y = (a * x * x) + (b * x) + c;
-        if (y >= -30 && y <= 30) {
+        // Benarkan y sehingga had paksi graf (-100 hingga 100)
+        if (y >= -100 && y <= 100) {
           curvePoints.push({ x: parseFloat(x.toFixed(2)), y: parseFloat(y.toFixed(2)) });
         }
       }
